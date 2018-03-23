@@ -1,0 +1,176 @@
+<html>
+<head>
+    <meta charset='utf-8'>
+    <meta name='viewport' content='width=device-width, initial-scale=1, shrink-to-fit=no'>
+	<link  href='https://fonts.googleapis.com/css?family=Roboto:300,400,500,700|Material+Icons' rel='stylesheet' /> <!-- TODO: Integrity -->
+	<link  href='https://fonts.googleapis.com/icon?family=Material+Icons' rel='stylesheet' /> <!-- TODO: Integrity -->
+	<link  href='https://unpkg.com/bootstrap-material-design@4.1.1/dist/css/bootstrap-material-design.min.css' integrity='sha384-wXznGJNEXNG1NFsbm0ugrLFMQPWswR3lds2VeinahP8N0zJw9VWSopbjv2x7WCvX' crossorigin='anonymous' rel='stylesheet' />
+	<link  href='https://cdnjs.cloudflare.com/ajax/libs/snackbarjs/1.1.0/snackbar.min.css' integrity='sha256-rX/chzDIALwDgcAShfPWTO3BVeCmRalixqn14d4hbTI=' crossorigin='anonymous' rel='stylesheet' />	
+	<link  href='css/main.css' rel='stylesheet' />
+	<link  href='css/snackbarjs.material.min.css' rel='stylesheet' /> <!-- TODO: Integrity -->
+	<script src='https://code.jquery.com/jquery-3.3.1.min.js' integrity='sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=' crossorigin='anonymous'></script>
+	<script src='https://unpkg.com/popper.js@1.12.6/dist/umd/popper.js' integrity='sha384-fA23ZRQ3G/J53mElWqVJEGJzU0sTs+SvzG8fXVWP+kJQ1lwFAOkcUOysnlKJC33U' crossorigin='anonymous'></script>
+	<script src='https://unpkg.com/bootstrap-material-design@4.1.1/dist/js/bootstrap-material-design.js' integrity='sha384-CauSuKpEqAFajSpkdjv3z9t8E7RlpJ1UP0lKM/+NdtSarroVKu069AlsRPKkFBz9' crossorigin='anonymous'></script>
+	<script src='https://not-an-aardvark.github.io/snoowrap/snoowrap-v1.15.2.min.js'></script> <!-- TODO: Integrity -->
+	<script src='https://cdnjs.cloudflare.com/ajax/libs/blueimp-JavaScript-Templates/3.11.0/js/tmpl.min.js'></script> <!-- TODO: Integrity -->
+	<script src='https://cdnjs.cloudflare.com/ajax/libs/snackbarjs/1.1.0/snackbar.min.js'></script> <!-- TODO: Integrity -->
+	<script src='js/index.js'></script>
+	<title>YARR - frontpage</title>
+</head>
+<body>
+	<div class='subreddits-container'></div>
+	<div class='main-container'>
+		<div class='links-container'></div>
+		<div class='content-container'>
+			<div class='title-container'></div>
+			<div class='comments-container'></div>
+		</div>
+	</div>
+	
+	<script type='text/x-tmpl' id='tmpl-title'>
+		<div class='title-main {%if (o.likes) { %} upvoted {% } else if (o.likes==false) { %} downvoted {% } %}{%if (o.saved) { %} saved{% } %}{%if (o.hidden) { %} hidden{% } %}{%if(o.gilded > 0) { %} gilded{% } %}' data-link-id='{%=o.id%}'>
+			<a class='title-image' href='{%=o.url%}' target='_blank'>
+				{%if (o.preview) { %}
+					<img class='title-image-img' src='{%=o.preview.images.last().source.url%}'>
+				{% }%}
+			</a>
+			<div class='title-header'>
+				<span class='title-header-subreddit' data-link-subreddit='{%=o.subreddit%}'>/r/{%=o.subreddit%}</span> &#8226; 
+				<span class='title-header-created'>{%=tmpl.shorttime(o.created_utc)%}</span> &#8226; 
+				<span class='title-header-author'>{%=o.author%} {%=tmpl.distinguish(o)%}</span> &#8226; 
+				<span class='score'><i class='material-icons'>arrow_upward</i>{%=tmpl.shortscore(o.score)%}</span>
+				<span><i class='material-icons comment'>comment</i> {%=tmpl.shortscore(o.num_comments)%}</span>
+				<div class='title-text'>
+					<span>{%=o.title%}</span>
+					<span class='gilds' data-gilds='{%=o.gilded%}'>{%=tmpl.gilded(o.gilded)%}</span>
+					{%if(o.link_flair_text) { %}<span class='flair tag'>{%=o.link_flair_text%}</span>{% } %}
+					{%if(o.stickied) { %}<span class='pinned tag'>PINNED</span>{% } %}
+					{%if(o.spoiler) { %}<span class='spoiler tag'>SPOILER</span>{% } %}
+					{%if(o.over_18) { %}<span class='nsfw tag'>NSFW</span>{% } %}
+				</div>
+			</div>
+			<div class='title-self'>{%#o.selftext_html%}</div>
+			<div class='title-footer'>
+				<i class='material-icons upvote'>arrow_upward</i>
+				<i class='material-icons downvote'>arrow_downward</i>
+				<i class='material-icons save'>star_rate</i>
+				<i class='material-icons hide'>visibility_off</i>
+				<i class='material-icons gild'>stars</i>
+				<i class='material-icons link'>link</i>
+				<i class='material-icons share'>share</i>
+				<i class='material-icons report'>report</i>
+				<i class='material-icons crosspost'>shuffle</i>
+			</div>
+		</div>
+	</script>
+	<script type='text/x-tmpl' id='tmpl-link'>
+		<div class='link-container{%if (o.likes) { %} upvoted{% } else if (o.likes==false) { %} downvoted{% } %}{%if (o.saved) { %} saved{% } %}{%if (o.hidden) { %} hidden{% } %}{%if(o.gilded > 0) { %} gilded{% } %}' 
+			data-link-id='{%=o.id%}'
+			data-link-url='{%=o.url%}'
+			data-link-permalink='https://tylerwilliamson.github.io/yarr/#/r/{%=o.subreddit.display_name%}/{%=o.id%}'>
+			<div class='link-header'>
+				<span class='link-header-subreddit' data-link-subreddit='{%=o.subreddit.display_name%}'>/r/{%=o.subreddit.display_name%}</span> &#8226; 
+				<span class='link-header-created'>{%=tmpl.shorttime(o.created_utc)%}</span> &#8226; 
+				<span class='link-header-author' data-distinguish='{%=tmpl.distinguish(o)%}'>{%=o.author.name%} {%=tmpl.distinguish(o)%}</span>
+			</div>
+			<div class='link-main'>
+				<a href='#/r/{%=o.subreddit.display_name%}/{%=o.id%}' class='link-main-title' data-link-url='/r/{%=o.subreddit.display_name%}/{%=o.id%}'>
+					<span>{%=o.title%}</span>
+					<span class='gilds' data-gilds='{%=o.gilded%}'>{%=tmpl.gilded(o.gilded)%}</span>
+					{%if(o.link_flair_text) { %}<span class='flair tag'>{%=o.link_flair_text%}</span>{% } %}
+					{%if(o.stickied) { %}<span class='pinned tag'>PINNED</span>{% } %}
+					{%if(o.spoiler) { %}<span class='spoiler tag'>SPOILER</span>{% } %}
+					{%if(o.over_18) { %}<span class='nsfw tag'>NSFW</span>{% } %}
+				</a>
+				<a href='{%=o.url%}' target='_blank' class='link-main-thumbnail'>
+					{%if (o.preview) { %} <img class='link-main-thumbnail-img' src='{%=o.preview.images[0].source.url%}'> {% }%}
+				</a>
+			</div>
+			<div class='link-footer'>
+				<div class='link-footer-left'>
+					<i class='material-icons arrow'>arrow_upward</i>
+					<span class='score' data-score='{%=o.score%}'>{%=tmpl.shortscore(o.score)%}</span>
+					<i class='material-icons comment'>comment</i>
+					<span> {%=tmpl.shortscore(o.num_comments)%}</span>
+				</div>
+				<div class='link-footer-right'>
+					<i class='material-icons upvote'>arrow_upward</i>
+					<i class='material-icons downvote'>arrow_downward</i>
+					<i class='material-icons overflow'>more_vert</i>
+				</div>
+				<div class='link-footer-clear'></div>
+			</div>
+		</div>
+	</script>
+	<script type='text/x-tmpl' id='tmpl-comment'>
+		<div class='comment-container' data-comment-depth='{% if (o.data.depth%2==0) { %}even{% } else { %}odd{% } %}'>
+			<div class='comment-main {%if (o.data.likes) { %} upvoted {% } else if (o.data.likes==false) { %} downvoted {% } %}' data-comment-id='{%=o.data.id%}'>
+				<div class='comment-header'>
+					<span class='comment-header-author' data-author='{%=tmpl.author(o.data.author)%}' data-distinguish='{%=tmpl.distinguish(o)%}'>{%=tmpl.author(o.data.author)%} {%=tmpl.distinguish(o)%}</span> &#8226; 
+					<span class='score' {%if (!o.data.score_hidden) { %}data-score='{%=o.data.score%}'{% } %}>{%if (o.data.score_hidden) { %}[score hidden]{% } else { %}{%=tmpl.shortscore(o.data.score)%} {% } %}</span>
+					{%if (!o.data.score_hidden) { %}<span class='pts'> pts</span>{% } %} 
+					<span class='gilds' data-gilds='{%=o.data.gilded%}'>{%=tmpl.gilded(o.data.gilded)%}</span> &#8226;
+					<span class='comment-header-time'>{%=tmpl.shorttime(o.data.created_utc)%}</span> &nbsp;
+					{%if (o.data.author_flair_text) { %}<span class='flair tag'>{%=o.data.author_flair_text%}</span>{% } %}
+					<span class='comment-header-hidden tag' data-comments='{%=tmpl.countcomments(o)%}'>+{%=tmpl.countcomments(o)%}</span>
+				</div>
+				<div class='comment-body'>{%#o.data.body_html%}</div>
+				<div class='comment-footer'>
+					<i class='material-icons upvote'>arrow_upward</i>
+					<i class='material-icons downvote'>arrow_downward</i>
+					<i class='material-icons save'>star_rate</i>
+					<i class='material-icons gild'>stars</i>
+					<i class='material-icons share'>share</i>
+					<i class='material-icons report'>report</i>
+				</div>
+			</div>
+			{% if (o.data.replies != '' && o.data.replies != null) { %}
+				{% for (var i=0;i<o.data.replies.data.children.length;i++) { %}
+					{% if (o.data.replies.data.children[i].kind == 'more') { %}
+						{%#tmpl('tmpl-comment-more',o.data.replies.data.children[i])%}
+					{% } else { %}
+						<div class='comment-children'>{%#tmpl('tmpl-comment',o.data.replies.data.children[i])%}</div>
+					{% } %}
+				{% } %}
+			{% } %}
+		</div>
+	</script>
+	<script type='text/x-tmpl' id='tmpl-comment-more'>
+		{% if (o.data.count > 0) { %}
+			<div class='comment-more' data-comment-moreids='{%=o.data.children.join(',')%}'>Load {%=o.data.count%} more</div>
+		{% } %}
+	</script>
+	<script type='text/x-tmpl' id='tmpl-subreddit'>
+		<span class='subreddit-container'><span class='subreddit' data-link-subreddit='{%if (o.display_name!='frontpage') { %}{%=o.display_name%}{% } %}'>{%=o.display_name%}</span></span>
+	</script>
+	<script type='text/x-tmpl' id='tmpl-overflow'>
+		<div class='overflowmenu-container'>
+			{%for (var i=0;i<o.menu.length;i++) { %}
+				<div class='overflowmenu-item'>
+					<i class='material-icons' data-icon='{%=o.menu[i].icon%}'>{%=o.menu[i].icon%}</i>
+					<span>{%#o.menu[i].text%}</span>
+				</div>
+			{%}%}
+		</div>
+	</script>
+	<div class="modal modalprompt" tabindex="-1" role="dialog">
+	  <div class="modal-dialog" role="document">
+		<div class="modal-content">
+		  <div class="modal-header">
+			<h5 class="modal-title"></h5>
+			<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+			  <span aria-hidden="true">&times;</span>
+			</button>
+		  </div>
+		  <div class="modal-body">
+			<p></p>
+			<input type="text" class="form-control">
+		  </div>
+		  <div class="modal-footer">
+			<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+		  </div>
+		</div>
+	  </div>
+	</div>
+</body>
+</html>
