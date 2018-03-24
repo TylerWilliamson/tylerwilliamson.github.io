@@ -208,7 +208,7 @@ body {
 .upvoted .score {
 	color: var(--orangered);
 }
-.downvoted .upvote, 
+.downvoted .downvote, 
 .downvoted .arrow,
 .downvoted .pts,
 .downvoted .score {
